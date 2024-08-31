@@ -6,7 +6,7 @@ namespace bangazon_be.Models
         public int CustomerId { get; set; }
         public DateTime CompletionDate { get; set; }
         public decimal TotalCost { get; set; }
-        public string PaymentType { get; set; }
+        public string? PaymentType { get; set; }
         public List<Product> Products { get; set; }
     }
 }
