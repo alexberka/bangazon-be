@@ -18,6 +18,11 @@ public class BangazonBeDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Order>()
+            .HasMany(e => e.Products)
+            .WithMany(e => e.Orders)
+            .UsingEntity<OrderProduct>();
+
         modelBuilder.Entity<Category>().HasData(new Category[]
             {
                 new() { Id = 1, Name = "Home Goods" },

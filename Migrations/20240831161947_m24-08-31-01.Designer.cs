@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace bangazon_be.Migrations
 {
     [DbContext(typeof(BangazonBeDbContext))]
-    partial class BangazonBeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240831161947_m24-08-31-01")]
+    partial class m24083101
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +37,7 @@ namespace bangazon_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -73,7 +75,7 @@ namespace bangazon_be.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CompletionDate")
+                    b.Property<DateTime>("CompletionDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("CustomerId")
@@ -89,7 +91,7 @@ namespace bangazon_be.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
 
                     b.HasData(
                         new
@@ -103,6 +105,7 @@ namespace bangazon_be.Migrations
                         new
                         {
                             Id = 2,
+                            CompletionDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2,
                             TotalCost = 0m
                         });
@@ -134,7 +137,7 @@ namespace bangazon_be.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts", (string)null);
+                    b.ToTable("OrderProducts");
 
                     b.HasData(
                         new
@@ -214,7 +217,7 @@ namespace bangazon_be.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
@@ -288,7 +291,7 @@ namespace bangazon_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -327,6 +330,21 @@ namespace bangazon_be.Migrations
                             Uid = "muIE7340mEE223Id",
                             Username = "atticusparker"
                         });
+                });
+
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.Property<int>("OrdersId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrdersId", "ProductsId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("bangazon_be.Models.Order", b =>
@@ -376,6 +394,21 @@ namespace bangazon_be.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.HasOne("bangazon_be.Models.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrdersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("bangazon_be.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("bangazon_be.Models.User", b =>
