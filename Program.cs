@@ -1,5 +1,6 @@
 
 using bangazon_be.Models;
+using bangazon_be.Apis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json.Serialization;
@@ -34,5 +35,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+CategoriesApi.Map(app);
+OrdersApi.Map(app);
+ProductsApi.Map(app);
+OrderProductsApi.Map(app);
+UsersApi.Map(app);
 
 app.Run();
