@@ -46,17 +46,21 @@ namespace bangazon_be.Apis
             });
 
             //Get single product
-            app.MapGet("/products/{id}", (BangazonBeDbContext db, int id) =>
+            app.MapGet("/products/{productId}/in-cart/{userId}", (BangazonBeDbContext db, int productId, int userId) =>
             {
                 Product? product = db.Products
                     .Include(p => p.Category)
                     .Include(p => p.Seller)
-                    .FirstOrDefault(p => p.Id == id);
+                    .FirstOrDefault(p => p.Id == productId);
 
                 if (product == null)
                 {
                     return Results.NotFound("Invalid Product Id");
                 }
+
+                Order? userCart = db.Orders
+                    .Include(o => o.OrderProducts)
+                    .FirstOrDefault(o => o.CustomerId == userId && o.CompletionDate == null);
 
                 return Results.Ok(new
                 {
@@ -67,6 +71,7 @@ namespace bangazon_be.Apis
                     product.Quantity,
                     product.Category,
                     product.Price,
+                    InCart = userCart?.OrderProducts.Count(op => op.ProductId == productId),
                     Seller = new { product.Seller.Id, product.Seller.Username },
                 });
             });
