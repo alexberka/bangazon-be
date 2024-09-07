@@ -10,9 +10,9 @@ namespace bangazon_be.Apis
         public static void Map(WebApplication app)
         {
             //
-            app.MapPost("/checkuser", (BangazonBeDbContext db, string uid) =>
+            app.MapPost("/checkuser", (BangazonBeDbContext db, User userCheck) =>
             {
-                User? user = db.Users.FirstOrDefault(u => u.Uid == uid);
+                User? user = db.Users.FirstOrDefault(u => u.Uid == userCheck.Uid);
 
                 if (user == null)
                 {
@@ -61,7 +61,8 @@ namespace bangazon_be.Apis
                                 p.ImageUrl,
                                 p.Price,
                                 Sold = p.OrderProducts.Count(op => op.PriceAtSale > 0),
-                                InCarts = p.OrderProducts.Count(op => op.PriceAtSale == 0)
+                                InCarts = p.OrderProducts.Count(op => op.PriceAtSale == 0),
+                                p.Category
                             })
                             .OrderByDescending(p => p.Sold + p.InCarts)
                             .ThenByDescending(p => p.Sold)
@@ -82,6 +83,8 @@ namespace bangazon_be.Apis
                 User? user = db.Users
                     .Include(u => u.Products)
                     .ThenInclude(p => p.OrderProducts)
+                    .Include(u => u.Products)
+                    .ThenInclude(p => p.Category)
                     .FirstOrDefault(u => u.Id == id);
 
                 if (user == null)
@@ -107,7 +110,8 @@ namespace bangazon_be.Apis
                                 p.Title,
                                 p.ImageUrl,
                                 p.Price,
-                                Sold = p.OrderProducts.Count(op => op.PriceAtSale > 0)
+                                Sold = p.OrderProducts.Count(op => op.PriceAtSale > 0),
+                                p.Category
                             })
                             .OrderBy(p => p.Title)
                             .ToList(),
@@ -120,7 +124,7 @@ namespace bangazon_be.Apis
             });
 
             //Get profile of current user
-            app.MapGet("/user", (BangazonBeDbContext db, string uid) =>
+            app.MapGet("/user/{uid}", (BangazonBeDbContext db, string uid) =>
             {
                 User? user = db.Users.FirstOrDefault(u => u.Uid == uid);
 

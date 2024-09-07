@@ -58,6 +58,7 @@ namespace bangazon_be.Apis
                         {
                             Id = op.ProductId,
                             Price = op.PriceAtSale,
+                            OrderProductId = op.Id,
                             op.Product.Title,
                             op.Product.ImageUrl,
                             Seller = new { op.Product.Seller.Id, op.Product.Seller.Username }
@@ -68,7 +69,7 @@ namespace bangazon_be.Apis
                     .FirstOrDefault();
             });
 
-            app.MapPut("/checkout/{orderId}", (BangazonBeDbContext db, int orderId, string paymentType) =>
+            app.MapPut("/checkout/{orderId}", (BangazonBeDbContext db, int orderId, Order newOrder) =>
             {
                 Order? checkoutOrder = db.Orders
                     .Include(o => o.OrderProducts)
@@ -86,7 +87,7 @@ namespace bangazon_be.Apis
 
                 checkoutOrder.CompletionDate = DateTime.Now;
                 checkoutOrder.TotalCost = checkoutOrder.OrderProducts.Sum(op => op.Product.Price);
-                checkoutOrder.PaymentType = paymentType;
+                checkoutOrder.PaymentType = newOrder.PaymentType;
 
                 foreach (OrderProduct op in checkoutOrder.OrderProducts)
                 {
